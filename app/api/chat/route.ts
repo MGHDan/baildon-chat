@@ -1,4 +1,4 @@
-import { anthropic } from '@ai-sdk/anthropic';
+import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 import { retrieveRelevantChunks } from '@/lib/rag';
 
@@ -38,7 +38,7 @@ Guidelines:
 - For urgent or safeguarding matters, always direct to the school office`;
 
   const result = streamText({
-    model: anthropic('claude-sonnet-4-6'),
+    model: google('gemini-1.5-flash'),
     system: systemPrompt,
     messages,
     maxTokens: 800,
