@@ -1,6 +1,5 @@
 import { sql } from '@vercel/postgres';
 import { chunkText } from '@/lib/rag';
-import { embedInBatches } from '@/lib/embeddings';
 
 export const runtime = 'nodejs';
 
@@ -47,13 +46,11 @@ export async function POST(req: Request) {
     const docId = docResult.rows[0].id as number;
 
     const chunks = chunkText(text);
-    const embeddings = await embedInBatches(chunks);
 
-    for (let i = 0; i < chunks.length; i++) {
-      const embeddingStr = `[${embeddings[i].join(',')}]`;
+    for (const chunk of chunks) {
       await sql`
-        INSERT INTO chunks (document_id, content, embedding)
-        VALUES (${docId}, ${chunks[i]}, ${embeddingStr}::vector)
+        INSERT INTO chunks (document_id, content)
+        VALUES (${docId}, ${chunk})
       `;
     }
 

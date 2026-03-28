@@ -1,26 +1,35 @@
 import { sql } from '@vercel/postgres';
-import { embedText } from './embeddings';
 
 export interface Chunk {
   content: string;
   name: string;
   type: string;
-  similarity: number;
+  rank: number;
 }
 
 export async function retrieveRelevantChunks(query: string, limit = 6): Promise<Chunk[]> {
   try {
-    const embedding = await embedText(query);
-    const embeddingStr = `[${embedding.join(',')}]`;
-
     const result = await sql`
       SELECT c.content, d.name, d.type,
-             1 - (c.embedding <=> ${embeddingStr}::vector) AS similarity
+             ts_rank(to_tsvector('english', c.content), plainto_tsquery('english', ${query})) AS rank
       FROM chunks c
       JOIN documents d ON c.document_id = d.id
-      ORDER BY c.embedding <=> ${embeddingStr}::vector
+      WHERE to_tsvector('english', c.content) @@ plainto_tsquery('english', ${query})
+      ORDER BY rank DESC
       LIMIT ${limit}
     `;
+
+    // If no keyword matches, fall back to most recent chunks for context
+    if (result.rows.length === 0) {
+      const fallback = await sql`
+        SELECT c.content, d.name, d.type, 0 AS rank
+        FROM chunks c
+        JOIN documents d ON c.document_id = d.id
+        ORDER BY c.created_at DESC
+        LIMIT ${limit}
+      `;
+      return fallback.rows as Chunk[];
+    }
 
     return result.rows as Chunk[];
   } catch (error) {
