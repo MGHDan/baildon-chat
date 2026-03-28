@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Baildon CE Primary — Parent Assistant',
+  title: 'Baildon — Parent Assistant',
   description: 'Ask questions about school policies, events, and news.',
 };
 

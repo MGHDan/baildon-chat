@@ -138,7 +138,7 @@ export default function AdminPage() {
             </div>
             <div>
               <h1 className="font-bold text-gray-800">Admin Panel</h1>
-              <p className="text-xs text-gray-500">Baildon CE Primary</p>
+              <p className="text-xs text-gray-500">Baildon School</p>
             </div>
           </div>
           <form onSubmit={login} className="space-y-4">
@@ -175,7 +175,7 @@ export default function AdminPage() {
             </svg>
           </div>
           <div>
-            <h1 className="font-bold">Baildon CE Primary — Admin</h1>
+            <h1 className="font-bold">Baildon School — Admin</h1>
             <p className="text-xs text-teal-100">Document Management</p>
           </div>
         </div>
