@@ -20,7 +20,7 @@ export async function retrieveRelevantChunks(query: string, limit = 6): Promise<
     `;
 
     // If no keyword matches, fall back to most recent chunks for context
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       const fallback = await sql`
         SELECT c.content, d.name, d.type, 0 AS rank
         FROM chunks c
@@ -28,10 +28,10 @@ export async function retrieveRelevantChunks(query: string, limit = 6): Promise<
         ORDER BY c.created_at DESC
         LIMIT ${limit}
       `;
-      return fallback.rows as Chunk[];
+      return fallback as Chunk[];
     }
 
-    return result.rows as Chunk[];
+    return result as Chunk[];
   } catch (error) {
     console.error('RAG retrieval error:', error);
     return [];

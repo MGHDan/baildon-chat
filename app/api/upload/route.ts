@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       VALUES (${name}, ${type}, ${text})
       RETURNING id
     `;
-    const docId = docResult.rows[0].id as number;
+    const docId = (docResult[0] as { id: number }).id;
 
     const chunks = chunkText(text);
 

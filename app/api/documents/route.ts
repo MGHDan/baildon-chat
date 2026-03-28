@@ -18,7 +18,7 @@ export async function GET(req: Request) {
       GROUP BY d.id
       ORDER BY d.created_at DESC
     `;
-    return Response.json({ documents: result.rows });
+    return Response.json({ documents: result });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     return Response.json({ error: message }, { status: 500 });
