@@ -1,4 +1,4 @@
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db';
 import { chunkText } from '@/lib/rag';
 
 export const runtime = 'nodejs';

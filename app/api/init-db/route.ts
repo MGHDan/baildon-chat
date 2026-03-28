@@ -1,4 +1,4 @@
-import { createClient } from '@vercel/postgres';
+import { Pool } from '@neondatabase/serverless';
 
 export const runtime = 'nodejs';
 
@@ -8,13 +8,16 @@ export async function GET(req: Request) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const client = createClient({
-    connectionString: process.env.POSTGRES_URL_NON_POOLING ?? process.env.POSTGRES_URL,
-  });
-  await client.connect();
+  const connectionString =
+    process.env.DATABASE_URL_UNPOOLED ??
+    process.env.POSTGRES_URL_NON_POOLING ??
+    process.env.DATABASE_URL ??
+    process.env.POSTGRES_URL;
+
+  const pool = new Pool({ connectionString });
 
   try {
-    await client.query(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS documents (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -24,7 +27,7 @@ export async function GET(req: Request) {
       )
     `);
 
-    await client.query(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS chunks (
         id SERIAL PRIMARY KEY,
         document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
@@ -33,7 +36,7 @@ export async function GET(req: Request) {
       )
     `);
 
-    await client.query(`
+    await pool.query(`
       CREATE INDEX IF NOT EXISTS chunks_fts_idx
       ON chunks USING GIN (to_tsvector('english', content))
     `);
@@ -43,6 +46,6 @@ export async function GET(req: Request) {
     const message = error instanceof Error ? error.message : String(error);
     return Response.json({ error: message }, { status: 500 });
   } finally {
-    await client.end();
+    await pool.end();
   }
 }
