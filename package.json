@@ -11,7 +11,7 @@
     "@ai-sdk/anthropic": "^1.0.6",
     "@neondatabase/serverless": "^0.10.4",
     "ai": "^4.1.0",
-    "next": "15.1.0",
+    "next": "^15.2.3",
     "pdf-parse": "^1.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
